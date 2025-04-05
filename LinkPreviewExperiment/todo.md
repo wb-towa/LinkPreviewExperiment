@@ -1,0 +1,6 @@
+# TODO
+
+1. Minimum viable app to load list of URLS ✅
+2. Minimum viable caching ✅
+3. Custom view to act as a full replacement of `LPLinkView`
+4. Robust, production worthy cache
