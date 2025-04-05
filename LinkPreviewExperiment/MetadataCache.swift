@@ -94,6 +94,8 @@ final class MetadataCache {
 
     static func load(url: URL) async -> LPLinkMetadata {
         do {
+            // borrowed from the good LinkPreview implementation to skip past my implementations Sendable warnings
+            // https://github.com/DandyLyons/LinkPreviews/blob/beta/Sources/LinkPreviews/LinkPreviews.swift#L50
             let metadata = try await withCheckedThrowingContinuation { @Sendable (continuation: CheckedContinuation<LPLinkMetadata, any Error>) in
                 LPMetadataProvider().startFetchingMetadata(for: url) { lpLinkMetadata, error in
                     if let error { continuation.resume(throwing: error) }
