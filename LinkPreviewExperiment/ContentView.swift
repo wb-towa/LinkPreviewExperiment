@@ -12,9 +12,9 @@ struct ContentView: View {
     var body: some View {
         VStack {
             List {
-                ForEach(urls, id: \.self) { url in
-                    ListRow(url: url) {
-                        onCopy(for: url)
+                ForEach(bookmarks, id: \.id) { bookmark in
+                    ListRow(bookmark: bookmark) {
+                        onCopy(for: bookmark.url)
                     }
                 }
             }

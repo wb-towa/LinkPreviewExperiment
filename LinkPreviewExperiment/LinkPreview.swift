@@ -14,7 +14,7 @@ let maxHeight: CGFloat = 245
 struct ListRow: View {
 
     @Environment(\.colorScheme) var colorScheme
-    let url: URL?
+    let bookmark: Bookmark
 
     let onAction: () -> Void
 
@@ -23,7 +23,7 @@ struct ListRow: View {
             Button(action: {
                 onAction()
             }) {
-                LinkPreview(url: url)
+                LinkPreview(bookmark: bookmark)
                     .frame(height: maxHeight)
                     .disabled(true)
             }
@@ -42,33 +42,22 @@ struct ListRow: View {
 struct LinkPreview: UIViewRepresentable {
     typealias UIViewType = LPLinkView
 
-    let url: URL?
+    let bookmark: Bookmark
 
     func makeUIView(context: UIViewRepresentableContext<LinkPreview>) -> LinkPreview.UIViewType {
-        guard let url = url else {
-            return SizableLinkPreview()
-        }
-        let slp = SizableLinkPreview(url: url)
+        let slp = SizableLinkPreview(metadata: LPLinkMetadata())
         return slp
     }
 
     func updateUIView(_ uiView: LinkPreview.UIViewType, context: UIViewRepresentableContext<LinkPreview>) {
 
-        if let url {
-            getMetadata(id: UUID(), url: url, uiView: uiView)
-        }
+        getMetadata(bookmark: bookmark, uiView: uiView)
     }
 
-    private func getMetadata(id: UUID, url: URL, uiView: LinkPreview.UIViewType) {
-        let provider = LPMetadataProvider()
-
-        provider.startFetchingMetadata(for: url) { metadata, error in
-            guard let metadata = metadata, error == nil else {
-                return
-            }
-            // TODO: consider adding caching back and its logic here
-            //RichLinkCache.set(for: id, metadata: metadata)
-
+    private func getMetadata(bookmark: Bookmark, uiView: LinkPreview.UIViewType) {
+        // a bit sad but it gets the job done for now
+        Task {
+            let metadata = await MetadataCache.get(for: bookmark)
             Task { @MainActor in
                 uiView.metadata = metadata
                 uiView.sizeToFit()
@@ -86,8 +75,8 @@ class SizableLinkPreview: LPLinkView {
         super.init(frame: .zero)
     }
 
-    override init(url: URL) {
-        super.init(url: url)
+    override init(metadata: LPLinkMetadata) {
+        super.init(metadata: metadata)
     }
 
     override var intrinsicContentSize: CGSize {
