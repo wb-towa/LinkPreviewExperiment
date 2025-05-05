@@ -16,7 +16,7 @@ The parts you will likely care about more are:
 
 1. `MetadataCache.swift` - more specifically the `Metadata` class
 2.  `Extensions` directory and its support utility functions
-3. `Shared/KMeansCluster.swift - this does the real work in getting the dominant color (see function: `getDominantColor()`)
+3. `Shared/KMeansCluster.swift` - this does the real work in getting the dominant color (see function: `getDominantColor()`)
 
 Once you understand what's going with the color extraction, you should be able to easily write a metadata 
 provider / caching setup that suits your needs.
