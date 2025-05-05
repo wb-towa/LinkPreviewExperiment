@@ -10,15 +10,35 @@ import AVFoundation
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            List {
-                ForEach(urls, id: \.self) { url in
-                    ListRow(url: url) {
-                        onCopy(for: url)
+        NavigationStack {
+            VStack {
+                List {
+                    ForEach(bookmarks, id: \.id) { bookmark in
+                        ListRow(bookmark: bookmark) {
+                            onCopy(for: bookmark.url)
+                        }
                     }
                 }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
+            .navigationTitle("link preview example")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(content: {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(role: .destructive, action: {
+                        logger.info("deleting cache for \(bookmarks.count) bookmarks")
+                        
+                        for bookmark in bookmarks {
+                            MetadataCache.delete(for: bookmark)
+                        }
+
+                    }) {
+                        Label("delete cache", systemImage: "trash")
+                            .labelStyle(.iconOnly)
+                    }
+                    .keyboardShortcut("d", modifiers: .control)
+                }
+            })
         }
     }
 }
