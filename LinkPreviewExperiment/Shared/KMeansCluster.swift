@@ -13,40 +13,39 @@ final class KMeansCluster {
     func calculate(points : [Point], into k : Int) -> [Cluster] {
         var clusters = [Cluster]()
 
-        // ADDED for locking issue and to add clarity this is not less than `k` for https://thehtml.review/ is will be 10,000
-        // it was a shortcut to stop the infinite loop.
-        let total = points.count
+        let total = points.count // Note: added for the lock issue - help to know when we have looked at every pixel already
+
+        var seen = 0
 
         for _ in 0 ..< k {
-            var p = points.randomElement()
-
-
-            /*
-             Note: Original implementation would lock up on https://thehtml.review/ because its favicon
-             has one color so it could end up just looping forever. The final slash is important too, the site
-             does not appear to provide the favicon without it.
-
-             To get a nicer, more accurate dominant color, you do not want to set this to 1 which
-             is another way to solve it. FYI 6 seems like a reasonable choice for k.
-
-             The bits I have added (See ADDED comments) appear to solve the issue without causing
-             much of a perf hit.
-
-             This is can probably be done better but it works as a demo and if you want to use it
-             just make sure you test it well and think about how it can be improved. An idea would
-             be iterate on `points.count` rather than `k` when the count is lower.
-             */
-
-            // ADDED for locking issue - probably should put `seen` outside the loop. Tests show it's fine
-            var seen = 0
+            // Note: for locking issue
+            // we've looped through all the colors so the contains
+            // method will likely always return true and never exit`
+            // no need to even finish to `k`.
             if seen > total {
                 break
             }
 
+            var p = points.randomElement()
 
+
+            /*
+             Note: Original implementation will lock up on https://thehtml.review/ because it has one color
+             so the while loop will get stucck on `clusters.contains(where: {$0.center == p})` returning
+             true forever.
+
+             A way out of this is to set `k` to 1 but that ruins most of the other colors, we're really only
+             catering for an edge case. Out of the hundreds of URLs I've tested, only one hangs and most
+             complete their loop in fewer than 10 iterations.
+
+             It's really only the URL above where it gets to 10,000 (the max number of pixels given that the image is resized).
+
+             */
             while p == nil || clusters.contains(where: {$0.center == p}) {
                 p = points.randomElement()
-                // ADDED for locking issue
+                // Note: for locking issue
+                // we have gone through all the colors so contains will likely
+                // return true forever.
                 seen += 1
                 if seen > total {
                     break
