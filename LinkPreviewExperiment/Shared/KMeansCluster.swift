@@ -13,15 +13,18 @@ final class KMeansCluster {
     func calculate(points : [Point], into k : Int) -> [Cluster] {
         var clusters = [Cluster]()
 
-        let total = points.count // ADDED for locking issue
+        // ADDED for locking issue and to add clarity this is not less than `k` for https://thehtml.review/ is will be 10,000
+        // it was a shortcut to stop the infinite loop.
+        let total = points.count
 
         for _ in 0 ..< k {
             var p = points.randomElement()
 
 
             /*
-             Note: Original implementation would lock up on https://html.review because its favicon
-             has one color so it could end up just looping forever.
+             Note: Original implementation would lock up on https://thehtml.review/ because its favicon
+             has one color so it could end up just looping forever. The final slash is important too, the site
+             does not appear to provide the favicon without it.
 
              To get a nicer, more accurate dominant color, you do not want to set this to 1 which
              is another way to solve it. FYI 6 seems like a reasonable choice for k.
@@ -34,7 +37,7 @@ final class KMeansCluster {
              be iterate on `points.count` rather than `k` when the count is lower.
              */
 
-            // ADDED for locking issue
+            // ADDED for locking issue - probably should put `seen` outside the loop. Tests show it's fine
             var seen = 0
             if seen > total {
                 break

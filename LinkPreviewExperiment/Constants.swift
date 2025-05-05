@@ -42,5 +42,6 @@ let bookmarks = [
     Bookmark(id: "yy", title: "Yamauchi Family Office", url: URL(string: "https://y-n10.com")),
     Bookmark(id: "zz", title: "Fresh Air Archive", url: URL(string: "https://freshairarchive.org")),
     Bookmark(id: "11", title: "70's sci-fi art", url: URL(string: "https://70s-sci-fi-art.ghost.io/")),
-    Bookmark(id: "22", title: "404 Media", url: URL(string: "https://www.404media.co/"))
+    Bookmark(id: "22", title: "404 Media", url: URL(string: "https://www.404media.co/")),
+    Bookmark(id: "33", title: "the html review", url: URL(string: "https://thehtml.review/"))
 ]
